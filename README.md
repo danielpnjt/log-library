@@ -26,35 +26,31 @@ import (
 )
 
 func ExampleHandler(w http.ResponseWriter, r *http.Request) {
-	// Create a context with log fields
 	ctx := context.Background()
 	ctx = logger.WithLogFields(ctx, logrus.Fields{
 		"user_id":    "123",
 		"request_id": "abcd-1234",
 	})
 
-	// Create a response
 	response := logger.Response{
 		Code: "200",
 		Desc: "Success",
 		Data: map[string]string{"message": "Hello, world!"},
 	}
 
-	// Add the response to the context
 	ctx = logger.WithResponse(ctx, response)
 
-	// Log and send the response
 	logger.LogAndSendResponse(ctx, w)
 }
 
 func main() {
-	// Initialize the logger
 	config := &logger.Config{
-		LogLevel: "info"
+		LogLevel: "info",
 	}
 	if err := logger.InitLogger(config); err != nil {
 		panic(err)
 	}
+	// defer logger.CloseLogger() // Ensure the file is closed at the end
 
 	http.HandleFunc("/", ExampleHandler)
 	http.ListenAndServe(":8080", nil)

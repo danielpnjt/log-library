@@ -32,14 +32,13 @@ func InitLogger(config *Config) error {
 
 	// Create log file with current date
 	logFileName := "logs/" + time.Now().Format(constant.LogDateFormat) + ".log"
-	logFile, err = os.OpenFile(logFileName, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+	file, err := os.OpenFile(logFileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 	if err != nil {
 		return err
 	}
 
 	// Set output to file
-	log.SetOutput(logFile)
-	log.SetFormatter(&logrus.JSONFormatter{})
+	log.SetOutput(file)
 
 	return nil
 }
