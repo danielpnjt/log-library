@@ -4,16 +4,14 @@ import (
 	"os"
 	"time"
 
+	"github.com/danielpnjt/log-library/constant"
 	"github.com/sirupsen/logrus"
 )
 
 // Config berisi konfigurasi untuk logger
 type Config struct {
 	LogLevel string
-	LogFile  string
 }
-
-const logDateFormat = "2006-01-02"
 
 // SetupLogger inisialisasi logger dengan konfigurasi
 func SetupLogger(config *Config) (*logrus.Logger, *os.File, error) {
@@ -35,7 +33,7 @@ func SetupLogger(config *Config) (*logrus.Logger, *os.File, error) {
 	}
 
 	// Create log file with current date
-	logFileName := "logs/" + time.Now().Format(logDateFormat) + ".log"
+	logFileName := "logs/" + time.Now().Format(constant.LogDateFormat) + ".log"
 	file, err := os.OpenFile(logFileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 	if err != nil {
 		return nil, nil, err

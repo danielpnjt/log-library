@@ -2,7 +2,9 @@ package logger
 
 import (
 	"os"
+	"time"
 
+	"github.com/danielpnjt/log-library/constant"
 	"github.com/sirupsen/logrus"
 )
 
@@ -10,13 +12,17 @@ var log *logrus.Logger
 
 // InitLogger menginisialisasi logger global
 func InitLogger(config *Config) error {
-	var file *os.File
-	var err error
-	log, file, err = SetupLogger(config)
+	logFileName := "logs/" + time.Now().Format(constant.LogDateFormat) + ".log"
+
+	file, err := os.OpenFile(logFileName, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
 	if err != nil {
 		return err
 	}
-	defer file.Close()
+
+	log = logrus.New()
+	log.Out = file
+	log.SetFormatter(&logrus.JSONFormatter{})
+
 	return nil
 }
 

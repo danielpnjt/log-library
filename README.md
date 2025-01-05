@@ -50,8 +50,7 @@ func ExampleHandler(w http.ResponseWriter, r *http.Request) {
 func main() {
 	// Initialize the logger
 	config := &logger.Config{
-		LogLevel: "info",
-		LogFile:  "app.log",
+		LogLevel: "info"
 	}
 	if err := logger.InitLogger(config); err != nil {
 		panic(err)
