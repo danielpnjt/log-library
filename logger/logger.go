@@ -40,6 +40,9 @@ func InitLogger(config *Config) error {
 	// Set output to file
 	log.SetOutput(file)
 
+	// Set log format to JSON
+	log.SetFormatter(&logrus.JSONFormatter{})
+
 	return nil
 }
 
