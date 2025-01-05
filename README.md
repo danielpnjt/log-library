@@ -1,55 +1,82 @@
-# Logger Library
+# Log Library
 
-This is a simple and standardized logging library for Go applications.
+This is a simple logging library written in Go.
 
 ## Installation
 
-To install the library, use the following command:
+To install the library, run:
 
 ```sh
-go get github.com/danielpnjt/logger
+go get github.com/danielpnjt/log-library
 ```
 
 ## Usage
 
-First, import the logger package in your Go application:
+Here is a basic example of how to use the library:
 
 ```go
-import "github.com/danielpnjt/logger"
+package main
+
+import (
+	"context"
+	"net/http"
+
+	"github.com/danielpnjt/log-library/logger"
+	"github.com/sirupsen/logrus"
+)
+
+func ExampleHandler(w http.ResponseWriter, r *http.Request) {
+	// Create a context with log fields
+	ctx := context.Background()
+	ctx = logger.WithLogFields(ctx, logrus.Fields{
+		"user_id":    "123",
+		"request_id": "abcd-1234",
+	})
+
+	// Create a response
+	response := logger.Response{
+		Code: "200",
+		Desc: "Success",
+		Data: map[string]string{"message": "Hello, world!"},
+	}
+
+	// Add the response to the context
+	ctx = logger.WithResponse(ctx, response)
+
+	// Log and send the response
+	logger.LogAndSendResponse(ctx, w)
+}
+
+func main() {
+	// Initialize the logger
+	config := &logger.Config{
+		LogLevel: "info",
+		LogFile:  "app.log",
+	}
+	if err := logger.InitLogger(config); err != nil {
+		panic(err)
+	}
+
+	http.HandleFunc("/", ExampleHandler)
+	http.ListenAndServe(":8080", nil)
+}
+
 ```
 
-### Initializing the Logger
+## Features
 
-Initialize the logger with the desired log level:
+- Simple and easy to use
+- Supports different log levels (Info, Warning, Error)
+- Customizable output formats
 
-```go
-logger.Init(logger.LevelInfo)
-```
+## License
 
-### Logging Messages
-
-You can log messages at different levels:
-
-```go
-logger.Debug("This is a debug message")
-logger.Info("This is an info message")
-logger.Warn("This is a warning message")
-logger.Error("This is an error message")
-```
-
-### Log Levels
-
-The available log levels are:
-
-- `logger.LevelDebug`
-- `logger.LevelInfo`
-- `logger.LevelWarn`
-- `logger.LevelError`
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
 ## Contributing
 
 Contributions are welcome! Please open an issue or submit a pull request.
 
-## License
+## Contact
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+For any questions or suggestions, feel free to contact me at [daniel.pnjt@gmail.com](mailto:daniel.pnjt@gmail.com).
