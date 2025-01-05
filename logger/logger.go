@@ -9,34 +9,59 @@ import (
 )
 
 var log *logrus.Logger
+var logFile *os.File
 
-// InitLogger menginisialisasi logger global
+// InitLogger initializes the global logger
 func InitLogger(config *Config) error {
-	logFileName := "logs/" + time.Now().Format(constant.LogDateFormat) + ".log"
+	log = logrus.New()
 
-	file, err := os.OpenFile(logFileName, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+	// Set log level
+	level, err := logrus.ParseLevel(config.LogLevel)
+	if err != nil {
+		return err
+	}
+	log.SetLevel(level)
+
+	// Create logs directory if it doesn't exist
+	if _, err := os.Stat("logs"); os.IsNotExist(err) {
+		err = os.Mkdir("logs", 0755)
+		if err != nil {
+			return err
+		}
+	}
+
+	// Create log file with current date
+	logFileName := "logs/" + time.Now().Format(constant.LogDateFormat) + ".log"
+	logFile, err = os.OpenFile(logFileName, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
 	if err != nil {
 		return err
 	}
 
-	log = logrus.New()
-	log.Out = file
+	// Set output to file
+	log.SetOutput(logFile)
 	log.SetFormatter(&logrus.JSONFormatter{})
 
 	return nil
 }
 
-// Info untuk mencatat log level info
+// CloseLogger closes the log file
+func CloseLogger() {
+	if logFile != nil {
+		logFile.Close()
+	}
+}
+
+// Info logs an info message
 func Info(message string, fields logrus.Fields) {
 	log.WithFields(fields).Info(message)
 }
 
-// Warn untuk mencatat log level warning
+// Warn logs a warning message
 func Warn(message string, fields logrus.Fields) {
 	log.WithFields(fields).Warn(message)
 }
 
-// Error untuk mencatat log level error
+// Error logs an error message
 func Error(message string, err error, fields logrus.Fields) {
 	log.WithFields(fields).WithError(err).Error(message)
 }
